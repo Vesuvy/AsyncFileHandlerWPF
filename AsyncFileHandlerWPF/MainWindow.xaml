@@ -32,9 +32,9 @@
         </StackPanel>
 
         <StackPanel Orientation="Vertical" Margin="10" Grid.Row="0" Grid.Column="1">
-            <CheckBox x:Name="ChboxDeleteWords" Content="Удалить слова длиной менее:" VerticalAlignment="Center" Margin="10" Checked="ChboxDeleteWords_Checked"/>
+            <CheckBox x:Name="ChboxDeleteWords" Content="Удалить слова длиной менее:" VerticalAlignment="Center" Margin="10" Checked="ChboxDeleteWords_Checked" Unchecked="ChboxDeleteWords_Unchecked"/>
             <TextBox x:Name="TbLengthWords" Width="100" HorizontalAlignment="Left" Margin="10 0 0 0"/>
-            <CheckBox x:Name="ChboxDeletePunct" Content="Удалить знаки препинания" VerticalAlignment="Center" Margin="10" Checked="ChboxDeletePunct_Checked" />
+            <CheckBox x:Name="ChboxDeletePunct" Content="Удалить знаки препинания" VerticalAlignment="Center" Margin="10" Checked="ChboxDeletePunct_Checked" Unchecked="ChboxDeletePunct_Unchecked"/>
         </StackPanel>
 
         <TextBox x:Name="TbResultFile" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" 

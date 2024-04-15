@@ -19,7 +19,8 @@ namespace AsyncFileHandlerWPF
             InitializeComponent();
         }
 
-        
+        private string originalText = string.Empty;
+
         private void BtnSelectFile_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
@@ -31,26 +32,10 @@ namespace AsyncFileHandlerWPF
             if (openFileDialog.ShowDialog() == true)
             {
                 TbNumberOfFiles.Text = "1";
-                TbResultFile.Text = File.ReadAllText(openFileDialog.FileName);
+                originalText = File.ReadAllText(openFileDialog.FileName);
+                TbResultFile.Text = originalText;
             }
         }
-        /*private void BtnSaveFile_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Выберите папку для сохранения файла.");
-            var saveFileDialog = new SaveFileDialog
-            {
-                Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*"
-            };
-
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                string directory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName);
-                string fileName = System.IO.Path.GetFileName(saveFileDialog.FileName);
-                string filePath = System.IO.Path.Combine(directory, fileName);
-                File.WriteAllText(filePath, TbResultFile.Text);
-                MessageBox.Show("Файл сохранен.");
-            }
-        }*/
         private async void BtnSaveFile_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -65,69 +50,42 @@ namespace AsyncFileHandlerWPF
             return Task.Run(() => File.WriteAllText(filePath, content));
         }
 
-        /*private async Task<string> ProcessFileAsync(string fileContent)
-        {
-            string text = fileContent;
-
-            // Получаем параметры обработки из интерфейса
-            bool deletePunctuation = true;
-            int minLength = 0;
-            if (ChboxDeleteWords.IsChecked == true && int.TryParse(TbLengthWords.Text, out int length))
-            {
-                minLength = length;
-            }
-
-            // Удаление знаков препинания
-            if (deletePunctuation)
-            {
-                text = await Task.Run(() => Regex.Replace(text, @"\p{P}", ""));
-            }
-
-            // Удаление слов длиной менее minLength символов
-            if (minLength > 0)
-            {
-                text = await Task.Run(() => string.Join(" ", text.Split().Where(word => word.Length >= minLength)));
-            }
-
-            return TbResultFile.Text = text;
-
-            // Сохранение обработанного текста в файл
-
-            //string resultFileName = System.IO.Path.GetFileNameWithoutExtension(fileName) + "_processed.txt";
-            //string resultFilePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(fileName), resultFileName);
-
-            //await File.WriteAllTextAsync(resultFilePath, text);
-            //MessageBox.Show("Файл обработан и сохранен.");
-        }*/
         private async void ChboxDeleteWords_Checked(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(TbResultFile.Text))
             {
-                //TbResultFile.Text = await ProcessFileAsync(TbResultFile.Text);
                 string a = "";
-                await Dispatcher.InvokeAsync(() => a = string.Join(" ", TbResultFile.Text.Split().Where(word => word.Length >= int.Parse(TbLengthWords.Text))));
-                TbResultFile.Text = a;
-                    
+                await Dispatcher.InvokeAsync(() => 
+                    a = string.Join(" ", TbResultFile.Text.Split().Where(word => word.Length >= int.Parse(TbLengthWords.Text))));
+                TbResultFile.Text = a;                    
             }
             else
             {
                 MessageBox.Show("Файл не выбран");
             }
+        }
+        private async void ChboxDeleteWords_Unchecked(object sender, RoutedEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() => TbResultFile.Text = originalText);
+            
         }
         private async void ChboxDeletePunct_Checked(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(TbResultFile.Text))
             {
-                //TbResultFile.Text = await ProcessFileAsync(TbResultFile.Text);
-                TbResultFile.Text = await Task.Run(() => 
-                    Regex.Replace(TbResultFile.Text, @"\p{P}", ""));
+                string a = "";
+                await Dispatcher.InvokeAsync(() => 
+                    a = Regex.Replace(TbResultFile.Text, @"\p{P}", ""));
+                TbResultFile.Text = a;
             }
             else
             {
                 MessageBox.Show("Файл не выбран");
             }
         }
-
-        
+        private async void ChboxDeletePunct_Unchecked(object sender, RoutedEventArgs e)
+        {
+            await Dispatcher.InvokeAsync(() => TbResultFile.Text = originalText);
+        }
     }
 }
