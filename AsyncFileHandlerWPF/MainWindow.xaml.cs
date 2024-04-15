@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AsyncFileHandlerWPF
 {
@@ -64,7 +65,7 @@ namespace AsyncFileHandlerWPF
             return Task.Run(() => File.WriteAllText(filePath, content));
         }
 
-        private async Task<string> ProcessFileAsync(string fileContent)
+        /*private async Task<string> ProcessFileAsync(string fileContent)
         {
             string text = fileContent;
 
@@ -97,12 +98,29 @@ namespace AsyncFileHandlerWPF
 
             //await File.WriteAllTextAsync(resultFilePath, text);
             //MessageBox.Show("Файл обработан и сохранен.");
+        }*/
+        private async void ChboxDeleteWords_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(TbResultFile.Text))
+            {
+                //TbResultFile.Text = await ProcessFileAsync(TbResultFile.Text);
+                string a = "";
+                await Dispatcher.InvokeAsync(() => a = string.Join(" ", TbResultFile.Text.Split().Where(word => word.Length >= int.Parse(TbLengthWords.Text))));
+                TbResultFile.Text = a;
+                    
+            }
+            else
+            {
+                MessageBox.Show("Файл не выбран");
+            }
         }
         private async void ChboxDeletePunct_Checked(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(TbResultFile.Text))
             {
-                TbResultFile.Text = await ProcessFileAsync(TbResultFile.Text);
+                //TbResultFile.Text = await ProcessFileAsync(TbResultFile.Text);
+                TbResultFile.Text = await Task.Run(() => 
+                    Regex.Replace(TbResultFile.Text, @"\p{P}", ""));
             }
             else
             {
@@ -110,16 +128,6 @@ namespace AsyncFileHandlerWPF
             }
         }
 
-        private async void ChboxDeleteWords_Checked(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(TbResultFile.Text))
-            {
-                TbResultFile.Text = await ProcessFileAsync(TbResultFile.Text);
-            }
-            else
-            {
-                MessageBox.Show("Файл не выбран");
-            }
-        }
+        
     }
 }
